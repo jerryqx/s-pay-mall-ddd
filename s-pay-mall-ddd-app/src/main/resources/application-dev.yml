@@ -1,5 +1,5 @@
 server:
-  port: 8091
+  port: 8080
 
 # 线程池配置
 thread:
@@ -17,7 +17,7 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/xfg_frame_archetype?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
+    url: jdbc:mysql://117.72.48.228:13306/s_pay_mall?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
     driver-class-name: com.mysql.cj.jdbc.Driver
   hikari:
     pool-name: Retail_HikariCP
@@ -34,6 +34,14 @@ spring:
 #mybatis:
 #  mapper-locations: classpath:/mybatis/mapper/*.xml
 #  config-location:  classpath:/mybatis/config/mybatis-config.xml
+# 微信公众号对接
+weixin:
+  config:
+    originalid: gh_dd05c099d67d
+    token: b8b6
+    app-id: wxfa86ef6d54566d89
+    app-secret: 281fce61c777138f98db0ada779be278
+    template_id: Z1H_2N6vhKEnQtlq2OL2noJlHMPDYvH7yECneffhkhU
 
 # 日志
 logging:
