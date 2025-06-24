@@ -16,7 +16,7 @@ services:
     privileged: true
   # 部署后端项目
   s-pay-mall:
-    image: registry.cn-hangzhou.aliyuncs.com/qx-images/s-pay-ddd:1.0
+    image: registry.cn-hangzhou.aliyuncs.com/qx-images/s-pay-ddd
     container_name: s-pay-mall
     restart: on-failure
     ports:
