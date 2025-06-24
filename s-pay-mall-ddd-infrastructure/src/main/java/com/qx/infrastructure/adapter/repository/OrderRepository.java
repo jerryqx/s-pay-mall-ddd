@@ -13,10 +13,12 @@ import com.qx.infrastructure.dao.IOrderDao;
 import com.qx.infrastructure.dao.po.PayOrder;
 import com.qx.types.event.BaseEvent;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Slf4j
 @Repository
 public class OrderRepository implements IOrderRepository {
 
@@ -92,6 +94,7 @@ public class OrderRepository implements IOrderRepository {
                 = paySuccessMessageEvent.buildEventMessage(PaySuccessMessageEvent.PaySuccessMessage.builder().tradeNo(orderId).build());
         PaySuccessMessageEvent.PaySuccessMessage paySuccessMessage = paySuccessMessageEventMessage.getData();
 
+        log.info("Posting event for order ID: {}", orderId);
         eventBus.post(paySuccessMessage);
 
     }
