@@ -6,11 +6,11 @@ services:
   # 部署前端项目
   nginx:
     image: nginx:1.25.1
-    container_name: nginx
+    container_name: s-pay-mall-front
     restart: always
     ports:
       - '443:443'
-      - '80:80'
+      - '81:80'
     volumes:
       - ./nginx/html:/usr/share/nginx/html
     privileged: true
