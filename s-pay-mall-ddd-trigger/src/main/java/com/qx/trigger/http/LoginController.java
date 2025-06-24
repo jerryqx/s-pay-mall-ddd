@@ -8,10 +8,7 @@ import com.qx.types.common.Constants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
@@ -52,7 +49,7 @@ public class LoginController implements IAuthService {
      */
     @RequestMapping(value = "check_login", method = RequestMethod.GET)
     @Override
-    public Response<String> checkLogin(String ticket) {
+    public Response<String> checkLogin(@RequestParam String ticket) {
         try {
             String openidToken = loginService.checkLogin(ticket);
             log.info("扫码检测登录结果 ticket:{} openidToken:{}", ticket, openidToken);
