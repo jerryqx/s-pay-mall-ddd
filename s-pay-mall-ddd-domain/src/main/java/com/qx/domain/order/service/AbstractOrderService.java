@@ -1,5 +1,6 @@
 package com.qx.domain.order.service;
 
+import com.alipay.api.AlipayApiException;
 import com.qx.domain.order.adapter.port.IProductPort;
 import com.qx.domain.order.adapter.repository.IOrderRepository;
 import com.qx.domain.order.model.aggregate.CreateOrderAggregate;
@@ -9,6 +10,8 @@ import com.qx.domain.order.model.entity.ProductEntity;
 import com.qx.domain.order.model.entity.ShopCartEntity;
 import com.qx.domain.order.model.valobj.OrderStatusVO;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
 
 
 @Slf4j
@@ -35,7 +38,12 @@ public abstract class AbstractOrderService implements IOrderService {
                     .payUrl(unpaidOrderEntity.getPayUrl())
                     .build();
         } else if (null != unpaidOrderEntity && OrderStatusVO.CREATE.equals(unpaidOrderEntity.getOrderStatusVO())) {
-            // todo xfg
+            log.info("创建订单-存在，存在未创建支付单订单，创建支付单开始 userId:{} productId:{} orderId:{}", shopCartEntity.getUserId(), shopCartEntity.getProductId(), unpaidOrderEntity.getOrderId());
+            PayOrderEntity payOrderEntity = doPrepayOrder(shopCartEntity.getUserId(), shopCartEntity.getProductId(), unpaidOrderEntity.getProductName(), unpaidOrderEntity.getOrderId(), unpaidOrderEntity.getTotalAmount());
+            return PayOrderEntity.builder()
+                    .orderId(payOrderEntity.getOrderId())
+                    .payUrl(payOrderEntity.getPayUrl())
+                    .build();
         }
 
         ProductEntity productEntity = port.queryProductByProductId(shopCartEntity.getProductId());
@@ -49,6 +57,7 @@ public abstract class AbstractOrderService implements IOrderService {
                 .build();
 
         this.doSaveOrder(orderAggregate);
+        PayOrderEntity payOrderEntity = doPrepayOrder(shopCartEntity.getUserId(), productEntity.getProductId(), productEntity.getProductName(), orderEntity.getOrderId(), productEntity.getPrice());
 
         return PayOrderEntity.builder()
                 .orderId(orderEntity.getOrderId())
@@ -57,5 +66,8 @@ public abstract class AbstractOrderService implements IOrderService {
     }
 
     protected abstract void doSaveOrder(CreateOrderAggregate orderAggregate);
+
+    protected abstract PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount) throws AlipayApiException;
+
 
 }

@@ -38,6 +38,12 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+        </dependency>
+        <!-- 系统模块 -->
         <!-- 系统模块 -->
         <dependency>
             <groupId>com.qx</groupId>

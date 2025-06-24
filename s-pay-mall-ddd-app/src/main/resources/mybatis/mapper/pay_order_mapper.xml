@@ -31,5 +31,8 @@
         order by id desc
         limit 1
     </select>
-
+    <update id="updateOrderPayInfo" parameterType="com.qx.infrastructure.dao.po.PayOrder">
+        update pay_order set pay_url = #{payUrl}, status = #{status}, update_time = now()
+        where order_id = #{orderId}
+    </update>
 </mapper>

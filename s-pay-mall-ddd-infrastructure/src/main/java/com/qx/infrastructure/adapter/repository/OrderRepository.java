@@ -3,6 +3,7 @@ package com.qx.infrastructure.adapter.repository;
 import com.qx.domain.order.adapter.repository.IOrderRepository;
 import com.qx.domain.order.model.aggregate.CreateOrderAggregate;
 import com.qx.domain.order.model.entity.OrderEntity;
+import com.qx.domain.order.model.entity.PayOrderEntity;
 import com.qx.domain.order.model.entity.ProductEntity;
 import com.qx.domain.order.model.entity.ShopCartEntity;
 import com.qx.domain.order.model.valobj.OrderStatusVO;
@@ -56,6 +57,18 @@ public class OrderRepository implements IOrderRepository {
                 .totalAmount(order.getTotalAmount())
                 .payUrl(order.getPayUrl())
                 .build();
+    }
+
+    @Override
+    public void updateOrderPayInfo(PayOrderEntity payOrderEntity) {
+        PayOrder payOrderReq = PayOrder.builder()
+                .userId(payOrderEntity.getUserId())
+                .orderId(payOrderEntity.getOrderId())
+                .status(payOrderEntity.getOrderStatus().getCode())
+                .payUrl(payOrderEntity.getPayUrl())
+                .build();
+        orderDao.updateOrderPayInfo(payOrderReq);
+
     }
 }
 
