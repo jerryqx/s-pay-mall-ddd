@@ -70,7 +70,7 @@ public class AliPayController implements IPayService {
     /**
      * http://xfg-studio.natapp1.cc/api/v1/alipay/alipay_notify_url
      */
-    @RequestMapping(value = "pay_notify", method = RequestMethod.POST)
+    @RequestMapping(value = "alipay_notify_url", method = RequestMethod.POST)
     public String payNotify(HttpServletRequest request) {
         try {
             log.info("支付回调，消息接收 {}", request.getParameter("trade_status"));
