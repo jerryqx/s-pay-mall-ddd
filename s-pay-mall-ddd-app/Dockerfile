@@ -12,6 +12,6 @@ ENV TZ=PRC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 添加应用
-ADD target/s-pay-mall-ddd-app.jar /s-pay-mall-ddd-app.jar
+ADD s-pay-mall-ddd-app/target/s-pay-mall-ddd-app.jar /s-pay-mall-ddd-app.jar
 
 ENTRYPOINT ["sh","-c","java -jar $JAVA_OPTS /s-pay-mall-ddd-app.jar $PARAMS"]
