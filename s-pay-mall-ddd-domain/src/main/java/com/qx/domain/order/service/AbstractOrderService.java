@@ -58,12 +58,14 @@ public abstract class AbstractOrderService implements IOrderService {
 
         this.doSaveOrder(orderAggregate);
         PayOrderEntity payOrderEntity = doPrepayOrder(shopCartEntity.getUserId(), productEntity.getProductId(), productEntity.getProductName(), orderEntity.getOrderId(), productEntity.getPrice());
+        log.info("创建订单-完成，生成支付单。userId: {} orderId: {} payUrl: {}", shopCartEntity.getUserId(), orderEntity.getOrderId(), payOrderEntity.getPayUrl());
 
         return PayOrderEntity.builder()
                 .orderId(orderEntity.getOrderId())
                 .payUrl("暂无")
                 .build();
     }
+
 
     protected abstract void doSaveOrder(CreateOrderAggregate orderAggregate);
 

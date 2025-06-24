@@ -2,6 +2,8 @@ package com.qx.config;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.eventbus.EventBus;
+import com.qx.trigger.listener.OrderPaySuccessListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,4 +26,10 @@ public class GuavaConfig {
                 .build();
     }
 
+    @Bean
+    public EventBus eventBusListener(OrderPaySuccessListener listener) {
+        EventBus eventBus = new EventBus();
+        eventBus.register(listener);
+        return eventBus;
+    }
 }
