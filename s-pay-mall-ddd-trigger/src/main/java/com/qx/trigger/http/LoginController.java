@@ -22,6 +22,7 @@ public class LoginController implements IAuthService {
 
     /**
      * http://xfg-studio.natapp1.cc/api/v1/login/weixin_qrcode_ticket
+     *
      * @return
      */
     @RequestMapping(value = "weixin_qrcode_ticket", method = RequestMethod.GET)
@@ -49,7 +50,7 @@ public class LoginController implements IAuthService {
      */
     @RequestMapping(value = "check_login", method = RequestMethod.GET)
     @Override
-    public Response<String> checkLogin(@RequestParam String ticket) {
+    public Response<String> checkLogin(@RequestParam("ticket") String ticket) {
         try {
             String openidToken = loginService.checkLogin(ticket);
             log.info("扫码检测登录结果 ticket:{} openidToken:{}", ticket, openidToken);
