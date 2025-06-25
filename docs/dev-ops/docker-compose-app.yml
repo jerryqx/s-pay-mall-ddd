@@ -1,6 +1,7 @@
 # /usr/local/bin/docker-compose -f /docs/dev-ops/environment/environment-docker-compose-2.4.yml up -d
 version: '3.8'
 # docker-compose -f docker-compose-app.yml up -d
+# GIT_COMMIT_ID=$(git rev-parse --short=8 HEAD) docker-compose -f docker-compose-app.yml up -d
 # 你需要修改system为你自身系统的仓库名
 services:
   # 部署前端项目
@@ -16,7 +17,7 @@ services:
     privileged: true
   # 部署后端项目
   s-pay-mall:
-    image: registry.cn-hangzhou.aliyuncs.com/qx-images/s-pay-ddd:1.0.0
+    image: registry.cn-hangzhou.aliyuncs.com/qx-images/s-pay-ddd:${CI_COMMIT_ID}
     container_name: s-pay-mall
     restart: on-failure
     pull_policy: always
