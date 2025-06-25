@@ -1,5 +1,6 @@
 package com.qx.domain.order.service;
 
+import com.qx.domain.order.model.entity.MarketPayDiscountEntity;
 import com.qx.domain.order.model.entity.PayOrderEntity;
 import com.qx.domain.order.model.entity.ShopCartEntity;
 
@@ -15,4 +16,5 @@ public interface IOrderService {
     List<String> queryTimeoutCloseOrderList();
 
     boolean changeOrderClose(String orderId);
-}
+
+ }

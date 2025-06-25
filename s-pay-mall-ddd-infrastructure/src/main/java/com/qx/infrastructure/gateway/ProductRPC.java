@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 public class ProductRPC {
 
 
-    public ProductDTO queryProductByProductId(String productId){
+    public ProductDTO queryProductByProductId(String productId) {
         ProductDTO productVO = new ProductDTO();
         productVO.setProductId(productId);
-        productVO.setProductName("测试商品");
-        productVO.setProductDesc("这是一个测试商品");
-        productVO.setPrice(new BigDecimal("1.68"));
+        productVO.setProductName("MyBatisBook");
+        productVO.setProductDesc("MyBatisBook");
+        productVO.setPrice(new BigDecimal("100.00"));
         return productVO;
     }
 }

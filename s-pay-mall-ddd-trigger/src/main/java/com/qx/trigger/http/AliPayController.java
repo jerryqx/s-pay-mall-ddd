@@ -8,6 +8,7 @@ import com.qx.api.dto.CreatePayRequestDTO;
 import com.qx.api.response.Response;
 import com.qx.domain.order.model.entity.PayOrderEntity;
 import com.qx.domain.order.model.entity.ShopCartEntity;
+import com.qx.domain.order.model.valobj.MarketTypeVO;
 import com.qx.domain.order.service.IOrderService;
 import com.qx.types.common.Constants;
 import jakarta.annotation.Resource;
@@ -46,10 +47,15 @@ public class AliPayController implements IPayService {
             log.info("商品下单，根据商品ID创建支付单开始 userId:{} productId:{}", createPayRequestDTO.getUserId(), createPayRequestDTO.getUserId());
             String userId = createPayRequestDTO.getUserId();
             String productId = createPayRequestDTO.getProductId();
+            String teamId = createPayRequestDTO.getTeamId();
+            Integer marketType = createPayRequestDTO.getMarketType();
+
             // 下单
             PayOrderEntity payOrderEntity = orderService.createOrder(ShopCartEntity.builder()
                     .userId(userId)
                     .productId(productId)
+                    .teamId(teamId)
+                    .marketTypeVO(MarketTypeVO.valueOf(marketType))
                     .build());
 
             log.info("商品下单，根据商品ID创建支付单完成 userId:{} productId:{} orderId:{}", userId, productId, payOrderEntity.getOrderId());

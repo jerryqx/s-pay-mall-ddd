@@ -8,7 +8,9 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.qx.domain.order.adapter.port.IProductPort;
 import com.qx.domain.order.adapter.repository.IOrderRepository;
 import com.qx.domain.order.model.aggregate.CreateOrderAggregate;
+import com.qx.domain.order.model.entity.MarketPayDiscountEntity;
 import com.qx.domain.order.model.entity.PayOrderEntity;
+import com.qx.domain.order.model.valobj.MarketTypeVO;
 import com.qx.domain.order.model.valobj.OrderStatusVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -36,21 +38,29 @@ public class OrderService extends AbstractOrderService {
         super(repository, port);
     }
 
+
     @Override
     protected void doSaveOrder(CreateOrderAggregate orderAggregate) {
         repository.doSaveOrder(orderAggregate);
     }
 
+    @Override
+    protected MarketPayDiscountEntity lockMarketPayOrder(String userId, String teamId, Long activityId, String productId, String orderId) {
+        return port.lockMarketPayOrder(userId, teamId, activityId, productId, orderId);
+    }
+
 
     @Override
-    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount) throws AlipayApiException {
+    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity) throws AlipayApiException {
+        BigDecimal payAmount = null == marketPayDiscountEntity ? totalAmount : marketPayDiscountEntity.getPayPrice();
+
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
         request.setNotifyUrl(notifyUrl);
         request.setReturnUrl(returnUrl);
 
         JSONObject bizContent = new JSONObject();
         bizContent.put("out_trade_no", orderId);
-        bizContent.put("total_amount", totalAmount.toString());
+        bizContent.put("total_amount", payAmount.toString());
         bizContent.put("subject", productName);
         bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
         request.setBizContent(bizContent.toString());
@@ -62,10 +72,20 @@ public class OrderService extends AbstractOrderService {
         payOrderEntity.setPayUrl(form);
         payOrderEntity.setOrderStatus(OrderStatusVO.PAY_WAIT);
 
+        // 营销信息
+        payOrderEntity.setMarketType(null == marketPayDiscountEntity ? MarketTypeVO.NO_MARKET.getCode() : MarketTypeVO.GROUP_BUY_MARKET.getCode());
+        payOrderEntity.setMarketDeductionAmount(null == marketPayDiscountEntity ? BigDecimal.ZERO : marketPayDiscountEntity.getDeductionPrice());
+        payOrderEntity.setPayAmount(payAmount);
         repository.updateOrderPayInfo(payOrderEntity);
 
         return payOrderEntity;
     }
+
+    @Override
+    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount) throws AlipayApiException {
+        return this.doPrepayOrder(userId, productId, productName, orderId, totalAmount, null);
+    }
+
 
     @Override
     public void changeOrderPaySuccess(String orderId) {
