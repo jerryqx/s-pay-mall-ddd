@@ -1,10 +1,11 @@
 package com.qx.trigger.http;
 
 
-import com.alipay.api.AlipayApiException;
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.qx.api.IPayService;
 import com.qx.api.dto.CreatePayRequestDTO;
+import com.qx.api.dto.NotifyRequestDTO;
 import com.qx.api.response.Response;
 import com.qx.domain.order.model.entity.PayOrderEntity;
 import com.qx.domain.order.model.entity.ShopCartEntity;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,13 +36,13 @@ public class AliPayController implements IPayService {
 
     /**
      * http://localhost:8080/api/v1/alipay/create_pay_order
-     *
+     * <p>
      * {
-     *     "userId": "10001",
-     *     "productId": "100001"
+     * "userId": "10001",
+     * "productId": "100001"
      * }
      */
-    @RequestMapping(value = "create_pay_order", method =  RequestMethod.POST)
+    @RequestMapping(value = "create_pay_order", method = RequestMethod.POST)
     @Override
     public Response<String> createPayOrder(@RequestBody CreatePayRequestDTO createPayRequestDTO) {
         try {
@@ -106,7 +108,7 @@ public class AliPayController implements IPayService {
                     log.info("支付回调，支付回调，更新订单 {}", tradeNo);
 
                     // 更新订单未已支付
-                    orderService.changeOrderPaySuccess(tradeNo);
+                    orderService.changeOrderPaySuccess(tradeNo, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(params.get("gmt_payment")));
                 }
             }
             return "success";
@@ -114,5 +116,22 @@ public class AliPayController implements IPayService {
             log.error("支付回调，处理失败", e);
             return "false";
         }
+    }
+
+
+    @RequestMapping(value = "group_buy_notify", method = RequestMethod.POST)
+    @Override
+    public String groupBuyNotify(NotifyRequestDTO requestDTO) {
+        log.info("拼团回调，组队完成，结算开始 {}", JSON.toJSONString(requestDTO));
+
+        try {
+            orderService.changeOrderMarketSettlement(requestDTO.getOutTradeNoList());
+            return "success";
+        } catch (Exception e) {
+            log.info("拼团回调，组队完成，结算失败 {}", JSON.toJSONString(requestDTO));
+            return "error";
+
+        }
+
     }
 }

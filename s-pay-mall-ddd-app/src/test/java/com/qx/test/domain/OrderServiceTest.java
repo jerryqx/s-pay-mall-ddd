@@ -24,9 +24,9 @@ public class OrderServiceTest {
     @Test
     public void test_createOrder() throws Exception {
         ShopCartEntity shopCartEntity = new ShopCartEntity();
-        shopCartEntity.setUserId("xiaofuge06");
+        shopCartEntity.setUserId("qx01");
         shopCartEntity.setProductId("9890001");
-        shopCartEntity.setTeamId("12234396");
+        //shopCartEntity.setTeamId("12234396");
         shopCartEntity.setActivityId(100123L);
         shopCartEntity.setMarketTypeVO(MarketTypeVO.GROUP_BUY_MARKET);
 

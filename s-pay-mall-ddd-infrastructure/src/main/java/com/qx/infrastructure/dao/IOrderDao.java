@@ -1,5 +1,6 @@
 package com.qx.infrastructure.dao;
 
+ import com.qx.domain.order.model.entity.OrderEntity;
  import com.qx.infrastructure.dao.po.PayOrder;
  import org.apache.ibatis.annotations.Mapper;
  import org.apache.ibatis.annotations.Param;
@@ -22,4 +23,11 @@ public interface IOrderDao {
     List<String> queryTimeoutCloseOrderList();
 
     boolean changeOrderClose(String orderId);
+
+    PayOrder queryOrderByOrderId(String orderId);
+
+    void changeOrderMarketSettlement(@Param("outTradeNoList") List<String> outTradeNoList);
+
+    void changeOrderDealDone(String orderId);
+
 }

@@ -15,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class OrderEntity {
 
+    private String userId;
     private String productId;
     private String productName;
     private String orderId;

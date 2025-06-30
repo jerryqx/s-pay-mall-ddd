@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.beans.Transient;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -100,6 +101,8 @@ public abstract class AbstractOrderService implements IOrderService {
                 .payUrl(payOrderEntity.getPayUrl())
                 .build();
     }
+
+
 
     protected abstract PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity) throws AlipayApiException;
 
