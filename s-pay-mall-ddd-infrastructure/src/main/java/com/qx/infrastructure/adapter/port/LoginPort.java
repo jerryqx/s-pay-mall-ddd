@@ -1,5 +1,6 @@
 package com.qx.infrastructure.adapter.port;
 
+import cn.hutool.core.util.IdUtil;
 import com.google.common.cache.Cache;
 import com.qx.domain.auth.adapter.port.ILoginPort;
 import com.qx.infrastructure.gateway.IWeixinApiService;
@@ -35,31 +36,9 @@ public class LoginPort implements ILoginPort {
 
     @Override
     public String createQrCodeTicket() throws IOException {
-        // 1. 获取 accessToken
-        String accessToken = weixinAccessToken.getIfPresent(appid);
-        if (null == accessToken) {
-            Call<WeixinTokenResponseDTO> call = weixinApiService.getToken("client_credential", appid, appSecret);
-            WeixinTokenResponseDTO weixinTokenRes = call.execute().body();
-            assert weixinTokenRes != null;
-            accessToken = weixinTokenRes.getAccess_token();
-            weixinAccessToken.put(appid, accessToken);
-        }
+        String sceneStr = IdUtil.getSnowflake().nextIdStr();
+        return createQrCodeTicket(sceneStr);
 
-        // 2. 生成 ticket
-        WeixinQrCodeRequestDTO weixinQrCodeReq = WeixinQrCodeRequestDTO.builder()
-                .expire_seconds(2592000)
-                .action_name(WeixinQrCodeRequestDTO.ActionNameTypeVO.QR_SCENE.getCode())
-                .action_info(WeixinQrCodeRequestDTO.ActionInfo.builder()
-                        .scene(WeixinQrCodeRequestDTO.ActionInfo.Scene.builder()
-                                .scene_id(100601)
-                                .build())
-                        .build())
-                .build();
-
-        Call<WeixinQrCodeResponseDTO> call = weixinApiService.createQrCode(accessToken, weixinQrCodeReq);
-        WeixinQrCodeResponseDTO weixinQrCodeRes = call.execute().body();
-        assert null != weixinQrCodeRes;
-        return weixinQrCodeRes.getTicket();
     }
 
     @Override
@@ -84,5 +63,35 @@ public class LoginPort implements ILoginPort {
 
         Call<Void> call = weixinApiService.sendMessage(accessToken, templateMessageDTO);
         call.execute();
+    }
+
+    @Override
+    public String createQrCodeTicket(String sceneStr) throws IOException {
+        // 1. 获取 accessToken
+        String accessToken = weixinAccessToken.getIfPresent(appid);
+        if (null == accessToken) {
+            Call<WeixinTokenResponseDTO> call = weixinApiService.getToken("client_credential", appid, appSecret);
+            WeixinTokenResponseDTO weixinTokenRes = call.execute().body();
+            assert weixinTokenRes != null;
+            accessToken = weixinTokenRes.getAccess_token();
+            weixinAccessToken.put(appid, accessToken);
+        }
+
+        // 2. 生成 ticket
+        WeixinQrCodeRequestDTO weixinQrCodeReq = WeixinQrCodeRequestDTO.builder()
+                .expire_seconds(2592000)
+                .action_name(WeixinQrCodeRequestDTO.ActionNameTypeVO.QR_STR_SCENE.getCode())
+                .action_info(WeixinQrCodeRequestDTO.ActionInfo.builder()
+                        .scene(WeixinQrCodeRequestDTO.ActionInfo.Scene.builder()
+                                .scene_str(sceneStr)
+                                .build())
+                        .build())
+                .build();
+
+        Call<WeixinQrCodeResponseDTO> call = weixinApiService.createQrCode(accessToken, weixinQrCodeReq);
+        WeixinQrCodeResponseDTO weixinQrCodeRes = call.execute().body();
+        assert null != weixinQrCodeRes;
+        return weixinQrCodeRes.getTicket();
+
     }
 }
