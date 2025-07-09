@@ -1,6 +1,19 @@
 server:
   port: 8080
 
+# 应用配置
+app:
+  config:
+    # 版本，方便通过接口版本升级
+    api-version: v1
+    # 跨域，开发阶段可以设置为 * 不限制
+    cross-origin: '*'
+    # SC 渠道配置 - 拼团对接渠道值、回调通知
+    group-buy-market:
+      api-url: http://117.72.48.228
+      notify-url: http://117.72.48.228/api/v1/alipay/group_buy_notify
+      source: s01
+      chanel: c01
 # 线程池配置
 thread:
   pool:
@@ -12,27 +25,47 @@ thread:
         block-queue-size: 5000
         policy: CallerRunsPolicy
 
-# 数据库配置
-#spring:
-#  datasource:
-#    username: root
-#    password: 123456
-#    url: jdbc:mysql://127.0.0.1:3306/xfg_frame_archetype?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#  hikari:
-#    pool-name: Retail_HikariCP
-#    minimum-idle: 15 #最小空闲连接数量
-#    idle-timeout: 180000 #空闲连接存活最大时间，默认600000（10分钟）
-#    maximum-pool-size: 25 #连接池最大连接数，默认是10
-#    auto-commit: true  #此属性控制从池返回的连接的默认自动提交行为,默认值：true
-#    max-lifetime: 1800000 #此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
-#    connection-timeout: 30000 #数据库连接超时时间,默认30秒，即30000
-#    connection-test-query: SELECT 1
-#  type: com.zaxxer.hikari.HikariDataSource
+# 数据库配置；启动时配置数据库资源信息
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/s_pay_mall?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  hikari:
+    pool-name: Retail_HikariCP
+    minimum-idle: 15 #最小空闲连接数量
+    idle-timeout: 180000 #空闲连接存活最大时间，默认600000（10分钟）
+    maximum-pool-size: 25 #连接池最大连接数，默认是10
+    auto-commit: true  #此属性控制从池返回的连接的默认自动提交行为,默认值：true
+    max-lifetime: 1800000 #此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+    connection-timeout: 30000 #数据库连接超时时间,默认30秒，即30000
+    connection-test-query: SELECT 1
+  type: com.zaxxer.hikari.HikariDataSource
 
-#mybatis:
-#  mapper-locations: classpath:/mybatis/mapper/*.xml
-#  config-location:  classpath:/mybatis/config/mybatis-config.xml
+# MyBatis 配置【如需使用记得打开】
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/*.xml
+  config-location:  classpath:/mybatis/config/mybatis-config.xml
+# 微信公众号对接
+weixin:
+  config:
+    originalid: gh_dd05c099d67d
+    token: b8b6
+    app-id: wxfa86ef6d54566d89
+    app-secret: 281fce61c777138f98db0ada779be278
+    template_id: Z1H_2N6vhKEnQtlq2OL2noJlHMPDYvH7yECneffhkhU
+
+
+alipay:
+  enabled: true
+  app_id: 9021000142605502
+  merchant_private_key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCZdP5kAfhOX5iGUuk2JRh6npeUdnQzWH86Z6J450CYVjShbXeI04F0NY1kJvuW6gQ8HLerFLvwlwH8GJJ3lpEOA7cukXufUOPnpIAMF5EbcIZRYjsUhGVptXPSB6aQzQWg3Jsx5E4xO/jlmBOgEAiG8i9PpPT/nu42FsQj5gF97GFpJf2XhOaZeblKQFxbSfLxcUJ3BjDmFreidm+41PBTJEYY8jMLXGQbx4nn802eT5PRxb4Z3ZSBswfU4k1hyAdk/VRLUUpFt2wwIAjfuiAbRvAlEeCn5GH+cwvPOBesbTsFYYJY1tt85aiKdAzxRix6CrW+czM/xx5HIjlAMlm9AgMBAAECggEAG+Wi4XdiNo02YyTrdIZl3tS55alrEnKCHpH8fVI88fSp+La3xk38+K1LmOtlTVgZkPv/f8BzMhehqryk08yxbgTK5lJYUOwZomDLTmdyX7SjFmRvLRmsff0YoxP0+dnrrgSsyfMhK94lL0foOW7wveeFJktsppOz5m1ZFtWXa9alXC/4UGlAAja+MhJq4ndAR03FeAHqe0REfYFlP6XDq8Lju4Roo3zFA7rHI3sHU+AWzYIcCfObK3Oe+xIeDkv0xDqM9dx+TAoeUwdhotyj9NRo+TVpXdMUdUgJ24qheVzKn8wGdRPpft1naugBzDbcmBFo1V4dl37SuHhh4ns1AQKBgQD1oBx3nx/uwzaMcPLJYsbRD+xC/lRKZHhCkp3LzajdUS5LytUEi2zyE5gYJkZFBlQoYXCew/9Qq+2yfh0+fZ+Cgy6UaqPsZN9So7Uh4FFWVOT06FjM8JDEl+I+R2ei7sMj3sWl+z1wHXf5fTAKyyg/sfDi92YJEUmG7upVqifyXQKBgQCf8EmWduDP4c5yfkUAaIBSsC79MtTUC3cvBKHf2IrZFoiePqPcYJ6ZbdMovK/wQCeKQqF/gunNEschBiAu5gGEqciJHnyLSoKHiflvWd1yYDlf5FvaRoIxe8jRPEEdHZ8A1ZZwxsAVlCOW5LW/RoxwOJvCYzNvQA7tRCAdzFZO4QKBgQDdAmE6/VIFS1+UxLigniFY0aP7r852Vaqj9DrJu9Z6tWYbynkbqryvoRPUfvPxfb1RzENCiAb+NoUdez6jEPPqwlCyOLYgqa8MM8NypN1q+d49w6bLWJZaXnOzKBrHT2EEsJlVPRhN/iYKtir5O02O6nReNM95zzVClU0DIaTp/QKBgFcJHAKVjqGR8Ba+QC6Ir8xPtEJ1dvwtgR5FFxIJdQXODWqQC/vRWH2GFnMEu3myb9H9kIUjaLgAj/yYqMrcv9bBzi9QN9ZVJdM8clD2RlwHoTFdw950oETtZ8r1TznY9L4vfT7B6aXUh8mFjKIacjJfm+OcuFDCO11CxXdxy0YBAoGAfAGQOH7ZFggxQV28DeCcrqRx78S5An6N9FSNxJGOFQu7+YjS62NtKqWJ4oAm6jv8RaIHhLjyuIU41AiQ84LMSDnCc+3k5t5VOimz5sBuhRBUBjDxVaLUTUSCDZg88NoGe+3LctWU0yNpWKMpjvEfLCioTwDl2xgQEm/Kkg2G1kk=
+  alipay_public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxelPyRQPuXULB1MOvGm4gtqJwsTgpzJLFFcGeAMpsJEWcGbxlnUODjlxy6L4c3ZrU6aixTMzjem9fMzmSPJCa79s1dEEkweYOjDkJ6cbYFUgq0vXUFwapMlITsm3nyjX8KYfUXtqIXZdNNExN/Ld5cMS4tymbFQs7Tm6ZV5Q5kxsJSyflQU3Vh4Ub7qi9kouwFsiYqcvvgZLUlMpA0spaZTBZIyWSY9KCw8E0JKbkmcQp+d85LGd9rvvP4KlGKEo+qBEaooZ1neS9vud0cVzMn5V5EEpkpfZtuGStYoE3KYPemZGnCfVbG4ciU7FdFUb8+M7eGUpZVbNw62UgPa8SwIDAQAB
+  notify_url: http://117.72.48.228:8080/api/v1/alipay/alipay_notify_url
+  return_url: https://gaga.plus
+  gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+
 
 # 日志
 logging:
