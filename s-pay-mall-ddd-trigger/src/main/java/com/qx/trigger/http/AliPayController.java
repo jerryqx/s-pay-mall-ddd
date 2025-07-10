@@ -51,6 +51,7 @@ public class AliPayController implements IPayService {
             String productId = createPayRequestDTO.getProductId();
             String teamId = createPayRequestDTO.getTeamId();
             Integer marketType = createPayRequestDTO.getMarketType();
+            Long activityId = createPayRequestDTO.getActivityId();
 
             // 下单
             PayOrderEntity payOrderEntity = orderService.createOrder(ShopCartEntity.builder()
@@ -58,6 +59,7 @@ public class AliPayController implements IPayService {
                     .productId(productId)
                     .teamId(teamId)
                     .marketTypeVO(MarketTypeVO.valueOf(marketType))
+                    .activityId(activityId)
                     .build());
 
             log.info("商品下单，根据商品ID创建支付单完成 userId:{} productId:{} orderId:{}", userId, productId, payOrderEntity.getOrderId());

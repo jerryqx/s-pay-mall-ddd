@@ -19,7 +19,7 @@ public class Retrofit2Config {
 
 
     @Bean
-    public IWeixinApiService weixinApiService( ) {
+    public IWeixinApiService weixinApiService() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.weixin.qq.com/")
                 .addConverterFactory(JacksonConverterFactory.create()).build();

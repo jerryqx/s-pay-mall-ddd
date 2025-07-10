@@ -71,6 +71,7 @@ public class ProductPort implements IProductPort {
 
             // 异常判断
             if (!"0000".equals(response.getCode())) {
+                log.error("锁单失败 {}", response);
                 throw new AppException(response.getCode(), response.getInfo());
             }
             LockMarketPayOrderResponseDTO responseDTO = response.getData();
