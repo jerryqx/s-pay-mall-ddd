@@ -13,6 +13,7 @@ import com.qx.domain.order.model.valobj.MarketTypeVO;
 import com.qx.domain.order.model.valobj.OrderStatusVO;
 import com.qx.infrastructure.dao.IOrderDao;
 import com.qx.infrastructure.dao.po.PayOrder;
+import com.qx.infrastructure.event.EventPublisher;
 import com.qx.types.event.BaseEvent;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,8 @@ public class OrderRepository implements IOrderRepository {
     private PaySuccessMessageEvent paySuccessMessageEvent;
     @Resource
     private EventBus eventBus;
+    @Resource
+    public EventPublisher publisher;
 
     @Override
     public void doSaveOrder(CreateOrderAggregate orderAggregate) {
@@ -109,7 +112,8 @@ public class OrderRepository implements IOrderRepository {
         PaySuccessMessageEvent.PaySuccessMessage paySuccessMessage = paySuccessMessageEventMessage.getData();
 
         log.info("Posting event for order ID: {}", orderId);
-        eventBus.post(JSON.toJSON(paySuccessMessage));
+       // eventBus.post(JSON.toJSON(paySuccessMessage));
+        publisher.publish(paySuccessMessageEvent.topic(), JSON.toJSONString(paySuccessMessage));
 
     }
 
@@ -168,7 +172,9 @@ public class OrderRepository implements IOrderRepository {
                             .build());
             PaySuccessMessageEvent.PaySuccessMessage paySuccessMessage = paySuccessMessageEventMessage.getData();
 
-            eventBus.post(JSON.toJSONString(paySuccessMessage));
+            //eventBus.post(JSON.toJSONString(paySuccessMessage));
+            publisher.publish(paySuccessMessageEvent.topic(), JSON.toJSONString(paySuccessMessage));
+
         });
     }
 }
