@@ -15,6 +15,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class OrderEntity {
 
+    /** 订单ID */
+    private Long id;
     private String userId;
     private String productId;
     private String productName;
@@ -30,5 +32,6 @@ public class OrderEntity {
     private BigDecimal marketDeductionAmount;
     // 支付金额
     private BigDecimal payAmount;
-
+    // 支付时间
+    private Date payTime;
 }

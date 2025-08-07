@@ -37,8 +37,10 @@
 <div class="action-bar">
     <button class="action-btn buy-alone"></button>
     <button class="action-btn group-buy"></button>
+    <button class="action-btn order-list-btn" onclick="window.location.href='order-list.html'">我的订单</button>
 </div>
 
+<script src="js/common.js"></script>
 <script src="js/index.js"></script>
 <script>
 // 新增支付确认函数
@@ -89,31 +91,15 @@ function showPaymentConfirm(price) {
     document.body.appendChild(overlay);
 }
 
-function obfuscateUserId(userId) {
-    if (userId.length <= 4) {
-      // 如果 userId 的长度小于或等于 4，则无需替换任何字符
-      return userId;
-    } else {
-      // 获取前两位和后两位
-      const start = userId.slice(0, 2);
-      const end = userId.slice(-2);
-      // 计算中间部分应该被替换成多少个 *
-      const middle = '*'.repeat(userId.length - 4);
-      // 返回成功替换后的字符串
-      return `${start}${middle}${end}`;
-    }
-  }
-
 document.addEventListener('DOMContentLoaded', function() {
-    // 根据测试诉求，设置基础地址
-    var sPayMallUrl = "http://117.72.48.228:8080";
-    var groupBuyMarketUrl = "http://117.72.48.228:8091";
-    var goodsId = "9890001";
+    // 使用公共配置
+    var sPayMallUrl = AppConfig.sPayMallUrl;
+    var groupBuyMarketUrl = AppConfig.groupBuyMarketUrl;
+    var goodsId = AppConfig.goodsId;
 
-    // 获取信息
-    var userId = getCookie("loginToken");
+    // 获取用户信息
+    var userId = AppUtils.getCurrentUserId();
     if (!userId) {
-        window.location.href = "login.html"; // 跳转到登录页
         return;
     }
 

@@ -102,7 +102,12 @@ public abstract class AbstractOrderService implements IOrderService {
                 .build();
     }
 
+    @Override
+    public List<OrderEntity> queryUserOrderList(String userId, Long lastId, Integer pageSize) {
 
+        return repository.queryUserOrderList(userId, lastId, pageSize);
+
+    }
 
     protected abstract PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity) throws AlipayApiException;
 

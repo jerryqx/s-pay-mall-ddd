@@ -30,4 +30,9 @@ public interface IOrderDao {
 
     void changeOrderDealDone(String orderId);
 
+    List<PayOrder> queryUserOrderList(String userId, Long lastId, Integer pageSize);
+
+    PayOrder queryOrderByUserIdAndOrderId(String userId, String orderId);
+
+    boolean refundOrder(String userId, String orderId);
 }

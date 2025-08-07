@@ -1,6 +1,5 @@
 package com.qx.domain.order.service;
 
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -30,21 +29,17 @@ import java.util.List;
 @Service
 public class OrderService extends AbstractOrderService {
 
-
     @Value("${alipay.notify_url}")
     private String notifyUrl;
     @Value("${alipay.return_url}")
     private String returnUrl;
 
-
     @Resource
     private AlipayClient alipayClient;
-
 
     public OrderService(IOrderRepository repository, IProductPort port) {
         super(repository, port);
     }
-
 
     @Override
     protected void doSaveOrder(CreateOrderAggregate orderAggregate) {
@@ -52,13 +47,15 @@ public class OrderService extends AbstractOrderService {
     }
 
     @Override
-    protected MarketPayDiscountEntity lockMarketPayOrder(String userId, String teamId, Long activityId, String productId, String orderId) {
+    protected MarketPayDiscountEntity lockMarketPayOrder(String userId, String teamId, Long activityId,
+                                                         String productId, String orderId) {
         return port.lockMarketPayOrder(userId, teamId, activityId, productId, orderId);
     }
 
-
     @Override
-    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity) throws AlipayApiException {
+    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId,
+                                           BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity)
+            throws AlipayApiException {
         BigDecimal payAmount = null == marketPayDiscountEntity ? totalAmount : marketPayDiscountEntity.getPayPrice();
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
@@ -80,8 +77,10 @@ public class OrderService extends AbstractOrderService {
         payOrderEntity.setOrderStatus(OrderStatusVO.PAY_WAIT);
 
         // 营销信息
-        payOrderEntity.setMarketType(null == marketPayDiscountEntity ? MarketTypeVO.NO_MARKET.getCode() : MarketTypeVO.GROUP_BUY_MARKET.getCode());
-        payOrderEntity.setMarketDeductionAmount(null == marketPayDiscountEntity ? BigDecimal.ZERO : marketPayDiscountEntity.getDeductionPrice());
+        payOrderEntity.setMarketType(null == marketPayDiscountEntity ? MarketTypeVO.NO_MARKET.getCode() :
+                MarketTypeVO.GROUP_BUY_MARKET.getCode());
+        payOrderEntity.setMarketDeductionAmount(
+                null == marketPayDiscountEntity ? BigDecimal.ZERO : marketPayDiscountEntity.getDeductionPrice());
         payOrderEntity.setPayAmount(payAmount);
         repository.updateOrderPayInfo(payOrderEntity);
 
@@ -89,10 +88,10 @@ public class OrderService extends AbstractOrderService {
     }
 
     @Override
-    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount) throws AlipayApiException {
+    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId,
+                                           BigDecimal totalAmount) throws AlipayApiException {
         return this.doPrepayOrder(userId, productId, productName, orderId, totalAmount, null);
     }
-
 
     @Override
     public void changeOrderPaySuccess(String orderId, Date payTime) {
@@ -130,5 +129,34 @@ public class OrderService extends AbstractOrderService {
     public void changeOrderMarketSettlement(List<String> outTradeNoList) {
         repository.changeOrderMarketSettlement(outTradeNoList);
 
+    }
+
+    @Override
+    public boolean refundOrder(String userId, String orderId) {
+
+        // 1. 查询订单信息，验证订单是否存在且属于该用户
+        OrderEntity orderEntity = repository.queryOrderByUserIdAndOrderId(userId, orderId);
+        if (null == orderEntity) {
+            log.warn("退单失败，订单不存在或不属于该用户 userId:{} orderId:{}", userId, orderId);
+            return false;
+        }
+        // 2. 检查订单状态，只有create、pay_wait、pay_success、deal_done状态的订单可以退单
+        String status = orderEntity.getOrderStatusVO().getCode();
+        if (OrderStatusVO.CLOSE.getCode().equals(status)) {
+            log.warn("退单失败，订单已关闭 userId:{} orderId:{} status:{}", userId, orderId, status);
+            return false;
+        }
+
+        // 3. 对于营销类型的单子，调用拼团执行组队退单 todo xfg
+
+        // 4. 执行退单操作
+        boolean result = repository.refundOrder(userId, orderId);
+        if (result) {
+            log.info("退单成功 userId:{} orderId:{}", userId, orderId);
+        } else {
+            log.warn("退单失败 userId:{} orderId:{}", userId, orderId);
+        }
+
+        return result;
     }
 }
